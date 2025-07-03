@@ -181,7 +181,7 @@
   "moduleExtensions": {
     "//spring_aot:extensions.bzl%spring_aot": {
       "general": {
-        "bzlTransitiveDigest": "NGlwo6KxWjBRoEm51qQ7Va+CpVYO5inf3QfMx8KIE+s=",
+        "bzlTransitiveDigest": "iMqK7HMqAN4Prlj5O9PHBJuCKEM/yEKB8gUKc5XncL0=",
         "usagesDigest": "c86AQV09GTaL5E/eIh5358EyAd5HfckEIQ+V2bzW5h4=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},

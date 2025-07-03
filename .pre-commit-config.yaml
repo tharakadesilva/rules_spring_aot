@@ -1,19 +1,19 @@
 # See CONTRIBUTING.md for instructions.
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
-
 # Commitizen runs in commit-msg stage
 # but we don't want to run the other hooks on commit messages
-default_stages: [commit]
+default_stages: [pre-commit]
 # Use a slightly older version of node by default
 # as the default uses a very new version of GLIBC
 default_language_version:
   node: 16.18.0
 repos:
-  - repo: meta
-    hooks:
-      - id: check-hooks-apply
-      - id: check-useless-excludes
+  # https://github.com/NixOS/nixpkgs/issues/238345
+  # - repo: meta
+  #   hooks:
+  #     - id: check-hooks-apply
+  #     - id: check-useless-excludes
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
     hooks:
