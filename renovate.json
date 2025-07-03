@@ -7,13 +7,16 @@
     "group:monorepos",
     "group:recommended",
     "replacements:all",
-    "workarounds:all"
+    "workarounds:all",
+    "helpers:pinGitHubActionDigests",
+    ":configMigration",
+    ":disableRateLimiting",
+    ":automergeMinor",
+    ":automergePr"
   ],
   "packageRules": [
     {
-      "matchFileNames": [
-        "MODULE.bazel"
-      ],
+      "matchFileNames": ["MODULE.bazel"],
       "enabled": false
     }
   ]
