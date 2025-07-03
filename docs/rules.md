@@ -7,8 +7,6 @@ Public API for Spring AOT Bazel rules.
 ## example
 
 <pre>
-load("@rules_spring_aot//spring_aot:defs.bzl", "example")
-
 example()
 </pre>
 
