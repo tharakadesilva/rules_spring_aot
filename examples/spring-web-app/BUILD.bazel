@@ -1,0 +1,54 @@
+load("@rules_graalvm//graalvm:defs.bzl", "native_image")
+load("@rules_java//java:defs.bzl", "java_library")
+load("@rules_java//java:java_binary.bzl", "java_binary")
+load("@rules_spring_aot//spring_aot:defs.bzl", "spring_aot_library")
+
+java_library(
+    name = "spring-web-app",
+    srcs = [
+        "DemoApplication.java",
+        "HelloController.java",
+    ],
+    runtime_deps = [
+        "@maven//:org_springframework_boot_spring_boot_starter_web",
+    ],
+    deps = [
+        "@maven//:org_springframework_boot_spring_boot",
+        "@maven//:org_springframework_boot_spring_boot_autoconfigure",
+        "@maven//:org_springframework_spring_web",
+    ],
+)
+
+java_binary(
+    name = "spring-web-app-bin",
+    main_class = "com.example.DemoApplication",
+    runtime_deps = [
+        ":spring-web-app",
+    ],
+)
+
+spring_aot_library(
+    name = "spring-web-app-aot",
+    artifact_id = "spring-web-app",
+    group_id = "com.example",
+    main_class = "com.example.DemoApplication",
+    target = ":spring-web-app",
+)
+
+java_binary(
+    name = "spring-web-app-aot-bin",
+    jvm_flags = [
+        "-Dspring.aot.enabled=true",
+    ],
+    main_class = "com.example.DemoApplication",
+    runtime_deps = [
+        ":spring-web-app-aot",
+    ],
+)
+
+native_image(
+    name = "spring-web-app-native-bin",
+    main_class = "com.example.DemoApplication",
+    native_image_tool = "@graalvm//:native-image",
+    deps = [":spring-web-app-aot"],
+)

@@ -1,7 +1,53 @@
 bazel_dep(name = "rules_spring_aot", version = "0.0.0", dev_dependency = True)
-bazel_dep(name = "bazel_skylib", version = "1.8.0", dev_dependency = True)
-
 local_path_override(
     module_name = "rules_spring_aot",
     path = "../..",
 )
+
+bazel_dep(name = "bazel_skylib", version = "1.8.0", dev_dependency = True)
+
+bazel_dep(name = "rules_java", version = "8.13.0")
+bazel_dep(name = "rules_graalvm", version = "0.11.1")
+
+gvm = use_extension("@rules_graalvm//:extensions.bzl", "graalvm")
+
+# https://github.com/sgammon/rules_graalvm/issues/401
+git_override(
+    module_name = "rules_graalvm",
+    branch = "main",
+    remote = "https://github.com/sgammon/rules_graalvm.git",
+)
+
+gvm.graalvm(
+    name = "graalvm",
+    distribution = "oracle",
+    java_version = "21",
+    version = "21.0.2",
+)
+use_repo(gvm, "graalvm")
+
+register_toolchains("@graalvm//:jvm")
+
+register_toolchains("@graalvm//:sdk")
+
+register_toolchains("@graalvm//:toolchain")
+
+register_toolchains("@graalvm//:toolchain_gvm")
+
+register_toolchains("@graalvm//:bootstrap_runtime_toolchain")
+
+bazel_dep(name = "rules_jvm_external", version = "6.7")
+
+maven = use_extension("@rules_jvm_external//:extensions.bzl", "maven")
+maven.install(
+    artifacts = [
+        "org.springframework.boot:spring-boot-starter",
+    ],
+    boms = [
+        "org.springframework.boot:spring-boot-dependencies:3.4.7",
+    ],
+    repositories = [
+        "https://repo1.maven.org/maven2",
+    ],
+)
+use_repo(maven, "maven")

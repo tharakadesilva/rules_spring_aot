@@ -1,0 +1,52 @@
+load("@bazel_skylib//rules:build_test.bzl", "build_test")
+load("@rules_graalvm//graalvm:defs.bzl", "native_image")
+load("@rules_java//java:defs.bzl", "java_binary", "java_library")
+load("@rules_spring_aot//spring_aot:defs.bzl", "spring_aot_library")
+
+java_library(
+    name = "test-app",
+    srcs = ["TestApplication.java"],
+    runtime_deps = [
+        "@maven//:org_springframework_boot_spring_boot_starter",
+    ],
+    deps = [
+        "@maven//:org_springframework_boot_spring_boot",
+        "@maven//:org_springframework_boot_spring_boot_autoconfigure",
+    ],
+)
+
+spring_aot_library(
+    name = "test-app-aot",
+    artifact_id = "test-app",
+    group_id = "com.example.test",
+    main_class = "com.example.test.TestApplication",
+    target = ":test-app",
+)
+
+java_binary(
+    name = "test-app-aot-bin",
+    jvm_flags = [
+        "-Dspring.aot.enabled=true",
+    ],
+    main_class = "com.example.test.TestApplication",
+    runtime_deps = [
+        ":test-app-aot",
+    ],
+)
+
+native_image(
+    name = "test-app-native",
+    main_class = "com.example.test.TestApplication",
+    native_image_tool = "@graalvm//:native-image",
+    deps = [":test-app-aot"],
+)
+
+build_test(
+    name = "build_test",
+    targets = [
+        ":test-app",
+        ":test-app-aot",
+        ":test-app-aot-bin",
+        ":test-app-native",
+    ],
+)

@@ -4,16 +4,124 @@ local_repository(
     path = "../..",
 )
 
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+http_archive(
+    name = "rules_license",
+    sha256 = "26d4021f6898e23b82ef953078389dd49ac2b5618ac564ade4ef87cced147b38",
+    urls = [
+        "https://mirror.bazel.build/github.com/bazelbuild/rules_license/releases/download/1.0.0/rules_license-1.0.0.tar.gz",
+        "https://github.com/bazelbuild/rules_license/releases/download/1.0.0/rules_license-1.0.0.tar.gz",
+    ],
+)
+
+http_archive(
+    name = "bazel_skylib",
+    sha256 = "fa01292859726603e3cd3a0f3f29625e68f4d2b165647c72908045027473e933",
+    urls = [
+        "https://mirror.bazel.build/github.com/bazelbuild/bazel-skylib/releases/download/1.8.0/bazel-skylib-1.8.0.tar.gz",
+        "https://github.com/bazelbuild/bazel-skylib/releases/download/1.8.0/bazel-skylib-1.8.0.tar.gz",
+    ],
+)
+
+load("@bazel_skylib//:workspace.bzl", "bazel_skylib_workspace")
+
+bazel_skylib_workspace()
+
+http_archive(
+    name = "rules_java",
+    sha256 = "b6c6d92ca9dbb77de31fb6c6a794d20427072663ce41c2b047902ffcc123e3ef",
+    urls = [
+        "https://github.com/bazelbuild/rules_java/releases/download/8.13.0/rules_java-8.13.0.tar.gz",
+    ],
+)
+
+load("@rules_java//java:rules_java_deps.bzl", "rules_java_dependencies")
+
+rules_java_dependencies()
+
+load("@bazel_features//:deps.bzl", "bazel_features_deps")
+
+bazel_features_deps()
+
+# note that the following line is what is minimally required from protobuf for the java rules
+# consider using the protobuf_deps() public API from @com_google_protobuf//:protobuf_deps.bzl
+load("@com_google_protobuf//bazel/private:proto_bazel_features.bzl", "proto_bazel_features")  # buildifier: disable=bzl-visibility
+
+proto_bazel_features(name = "proto_bazel_features")
+
+# register toolchains
+load("@rules_java//java:repositories.bzl", "rules_java_toolchains")
+
+rules_java_toolchains()
+
+# # https://github.com/sgammon/rules_graalvm/issues/401
+# http_archive(
+#     name = "rules_graalvm",
+#     sha256 = "e4fa275b062dcd03b1ecb02bb25f01ead512023006a874a5e0c2cb78ba6d8e73",
+#     strip_prefix = "rules_graalvm-0.11.1",
+#     urls = [
+#         "https://github.com/sgammon/rules_graalvm/releases/download/v0.11.0/rules_graalvm-0.11.1.zip",
+#     ],
+# )
+
+load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
+
+# https://github.com/sgammon/rules_graalvm/issues/401
+git_repository(
+    name = "rules_graalvm",
+    branch = "main",
+    remote = "https://github.com/sgammon/rules_graalvm.git",
+)
+
+load("@rules_graalvm//graalvm:repositories.bzl", "graalvm_repository")
+
+graalvm_repository(
+    name = "graalvm",
+    distribution = "oracle",
+    java_version = "21",
+    version = "21.0.2",
+)
+
+load("@rules_graalvm//graalvm:workspace.bzl", "register_graalvm_toolchains")
+
+register_graalvm_toolchains()
+
+RULES_JVM_EXTERNAL_TAG = "6.7"
+
+RULES_JVM_EXTERNAL_SHA = "a1e351607f04fed296ba33c4977d3fe2a615ed50df7896676b67aac993c53c18"
+
+http_archive(
+    name = "rules_jvm_external",
+    sha256 = RULES_JVM_EXTERNAL_SHA,
+    strip_prefix = "rules_jvm_external-%s" % RULES_JVM_EXTERNAL_TAG,
+    url = "https://github.com/bazel-contrib/rules_jvm_external/releases/download/%s/rules_jvm_external-%s.tar.gz" % (RULES_JVM_EXTERNAL_TAG, RULES_JVM_EXTERNAL_TAG),
+)
+
+load("@rules_jvm_external//:repositories.bzl", "rules_jvm_external_deps")
+
+rules_jvm_external_deps()
+
+load("@rules_jvm_external//:setup.bzl", "rules_jvm_external_setup")
+
+rules_jvm_external_setup()
+
+load("@rules_jvm_external//:defs.bzl", "maven_install")
+
+maven_install(
+    artifacts = [
+        "org.springframework.boot:spring-boot-starter",
+    ],
+    boms = [
+        "org.springframework.boot:spring-boot-dependencies:3.4.7",
+    ],
+    repositories = [
+        "https://repo1.maven.org/maven2",
+    ],
+)
+
 #---SNIP--- Below here is re-used in the workspace snippet published on releases
 
-######################
-# rules_spring_aot setup #
-######################
-# Fetches the rules_spring_aot dependencies.
-# If you want to have a different version of some dependency,
-# you should fetch it *before* calling this.
-# Alternatively, you can skip calling this function, so long as you've
-# already fetched all the dependencies.
 load("@rules_spring_aot//spring_aot:repositories.bzl", "rules_spring_aot_dependencies")
 
 rules_spring_aot_dependencies()

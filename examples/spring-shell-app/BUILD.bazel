@@ -1,0 +1,59 @@
+load("@rules_graalvm//graalvm:defs.bzl", "native_image")
+load("@rules_java//java:defs.bzl", "java_library")
+load("@rules_java//java:java_binary.bzl", "java_binary")
+load("@rules_spring_aot//spring_aot:defs.bzl", "spring_aot_library")
+
+java_library(
+    name = "spring-shell-app",
+    srcs = [
+        "DemoApplication.java",
+        "HelloCommand.java",
+        "NativeImageHints.java",
+    ],
+    runtime_deps = [
+        "@maven//:org_springframework_shell_spring_shell_starter",
+    ],
+    deps = [
+        "@maven//:org_hibernate_validator_hibernate_validator",
+        "@maven//:org_jboss_logging_jboss_logging",
+        "@maven//:org_springframework_boot_spring_boot",
+        "@maven//:org_springframework_boot_spring_boot_autoconfigure",
+        "@maven//:org_springframework_shell_spring_shell_core",
+        "@maven//:org_springframework_spring_context",
+        "@maven//:org_springframework_spring_core",
+    ],
+)
+
+java_binary(
+    name = "spring-shell-app-bin",
+    main_class = "com.example.DemoApplication",
+    runtime_deps = [
+        ":spring-shell-app",
+    ],
+)
+
+spring_aot_library(
+    name = "spring-shell-app-aot",
+    artifact_id = "spring-shell-app",
+    group_id = "com.example",
+    main_class = "com.example.DemoApplication",
+    target = ":spring-shell-app",
+)
+
+java_binary(
+    name = "spring-shell-app-aot-bin",
+    jvm_flags = [
+        "-Dspring.aot.enabled=true",
+    ],
+    main_class = "com.example.DemoApplication",
+    runtime_deps = [
+        ":spring-shell-app-aot",
+    ],
+)
+
+native_image(
+    name = "spring-shell-app-native-bin",
+    main_class = "com.example.DemoApplication",
+    native_image_tool = "@graalvm//:native-image",
+    deps = [":spring-shell-app-aot"],
+)
