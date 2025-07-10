@@ -36,7 +36,7 @@ register_toolchains("@graalvm//:toolchain_gvm")
 
 register_toolchains("@graalvm//:bootstrap_runtime_toolchain")
 
-bazel_dep(name = "rules_jvm_external", version = "6.7")
+bazel_dep(name = "rules_jvm_external", version = "6.8")
 
 maven = use_extension("@rules_jvm_external//:extensions.bzl", "maven")
 maven.install(
