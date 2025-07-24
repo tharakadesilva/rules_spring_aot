@@ -101,4 +101,4 @@ native_image(
 - Spring Boot 3.0 or higher (requires AOT support)
   - **Note**: `org.springframework.boot/spring-boot` must be present in the target java_library's classpath
 - GraalVM (optional, for native image builds)
-- **Platform**: Linux and macOS only (Windows is not supported)
+- **Platform**: Linux (Ubuntu; Debian needs testing) and macOS only (Windows is not supported)
