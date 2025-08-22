@@ -1,4 +1,5 @@
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
+load("@rules_java//java:defs.bzl", "java_binary")
 
 # For stardoc to reference the files
 exports_files([
@@ -23,4 +24,13 @@ bzl_library(
         "@rules_java//java:rules",
         "@rules_java//java/private:proto_support",
     ],
+)
+
+# Spring AOT Factories Processor - processes aot.factories files
+java_binary(
+    name = "spring_aot_factories_processor",
+    srcs = ["SpringAotFactoriesProcessor.java"],
+    main_class = "com.bazel.spring.aot.SpringAotFactoriesProcessor",
+    visibility = ["//visibility:public"],
+    deps = [],  # No external dependencies needed - uses standard Java APIs only
 )
