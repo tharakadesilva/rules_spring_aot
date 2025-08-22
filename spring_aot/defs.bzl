@@ -8,6 +8,9 @@ def _spring_aot_process_impl(ctx):
 
     target_info = ctx.attr.target[JavaInfo]
     classpath_jars = target_info.transitive_runtime_jars
+    
+    # Get the AOT factories processor JAR
+    processor_jar = ctx.attr._aot_factories_processor[DefaultInfo].files.to_list()[0]
 
     compiled_jar = ctx.actions.declare_file(ctx.label.name + ".jar")
 
@@ -29,6 +32,18 @@ echo "Running Spring AOT processor..."
 {java} -cp "{classpath}" org.springframework.boot.SpringApplicationAotProcessor \
     {main_class} "$SOURCE_OUT" "$RESOURCE_OUT" "$CLASS_OUT" \
     {group_id} {artifact_id} {args}
+
+echo "Processing aot.factories for RuntimeHintsRegistrar..."
+NATIVE_CONFIG_OUT=$(mktemp -d)
+echo "Classpath has $(echo "{classpath}" | tr ':' '\n' | wc -l) JAR files"
+{java} -cp "{processor_jar}:{classpath}" com.bazel.spring.aot.SpringAotFactoriesProcessor "{classpath}" "$NATIVE_CONFIG_OUT" || echo "Warning: aot.factories processing failed"
+
+# Merge generated native configs into resources
+if [ -f "$NATIVE_CONFIG_OUT/reflect-config.json" ]; then
+    echo "Merging native-image configurations..."
+    mkdir -p "$RESOURCE_OUT/META-INF/native-image/{group_id}/{artifact_id}"
+    cp "$NATIVE_CONFIG_OUT"/*.json "$RESOURCE_OUT/META-INF/native-image/{group_id}/{artifact_id}/" 2>/dev/null || true
+fi
 
 echo "AOT processing complete. Checking generated files..."
 echo "Source files:"
@@ -76,6 +91,7 @@ fi
             artifact_id = ctx.attr.artifact_id,
             args = " ".join(ctx.attr.args),
             output_jar = compiled_jar.path,
+            processor_jar = processor_jar.path,
         ),
         is_executable = True,
     )
@@ -83,7 +99,7 @@ fi
     ctx.actions.run(
         outputs = [compiled_jar],
         inputs = depset(
-            direct = [aot_and_compile_script],
+            direct = [aot_and_compile_script, processor_jar],
             transitive = [classpath_jars, java_runtime.files],
         ),
         executable = aot_and_compile_script,
@@ -124,6 +140,11 @@ spring_aot_process = rule(
         ),
         "args": attr.string_list(
             doc = "Additional arguments to pass to the AOT processor",
+        ),
+        "_aot_factories_processor": attr.label(
+            default = "//spring_aot:spring_aot_factories_processor",
+            executable = True,
+            cfg = "exec",
         ),
     },
     provides = [JavaInfo],
