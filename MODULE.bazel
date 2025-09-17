@@ -8,12 +8,16 @@ bazel_dep(name = "bazel_skylib", version = "1.8.0")
 bazel_dep(name = "package_metadata", version = "0.0.5")
 bazel_dep(name = "platforms", version = "1.0.0")
 
-bazel_dep(name = "gazelle", version = "0.45.0", dev_dependency = True, repo_name = "bazel_gazelle")
+bazel_dep(name = "gazelle", version = "0.45.0", repo_name = "bazel_gazelle")
 bazel_dep(name = "bazel_skylib_gazelle_plugin", version = "1.8.1", dev_dependency = True)
 bazel_dep(name = "aspect_bazel_lib", version = "2.21.1", dev_dependency = True)
 bazel_dep(name = "buildifier_prebuilt", version = "8.2.0.2", dev_dependency = True)
 
 bazel_dep(name = "rules_java", version = "8.15.2")
+
+# Java 21 toolchain configuration
+java = use_extension("@rules_java//java:extensions.bzl", "toolchains")
+use_repo(java, "remotejdk21_linux")
 
 bazel_dep(name = "rules_graalvm", version = "0.11.1", dev_dependency = True)
 

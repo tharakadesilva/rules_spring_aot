@@ -5,10 +5,16 @@
 # Required until this is the default; expected in Bazel 7
 common --enable_bzlmod
 
-# Don’t want to push a rules author to update their deps if not needed.
+# Don't want to push a rules author to update their deps if not needed.
 # https://bazel.build/reference/command-line-reference#flag--check_direct_dependencies
 # https://bazelbuild.slack.com/archives/C014RARENH0/p1691158021917459?thread_ts=1691156601.420349&cid=C014RARENH0
 common --check_direct_dependencies=off
+
+# Java 21 configuration
+build --java_language_version=21
+build --java_runtime_version=21
+build --tool_java_language_version=21
+build --tool_java_runtime_version=21
 
 import %workspace%/bazelrc/buildbuddy.bazelrc
 
