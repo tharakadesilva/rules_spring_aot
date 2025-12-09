@@ -30,9 +30,9 @@ bazel_skylib_workspace()
 
 http_archive(
     name = "rules_java",
-    sha256 = "47632cc506c858011853073449801d648e10483d4b50e080ec2549a4b2398960",
+    sha256 = "6ef26d4f978e8b4cf5ce1d47532d70cb62cd18431227a1c8007c8f7843243c06",
     urls = [
-        "https://github.com/bazelbuild/rules_java/releases/download/8.15.2/rules_java-8.15.2.tar.gz",
+        "https://github.com/bazelbuild/rules_java/releases/download/9.3.0/rules_java-9.3.0.tar.gz",
     ],
 )
 
