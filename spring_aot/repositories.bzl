@@ -30,8 +30,8 @@ def rules_spring_aot_dependencies():
 
     http_archive(
         name = "rules_java",
-        sha256 = "47632cc506c858011853073449801d648e10483d4b50e080ec2549a4b2398960",
+        sha256 = "9de4e178c2c4f98d32aafe5194c3f2b717ae10405caa11bdcb460ac2a6f61516",
         urls = [
-            "https://github.com/bazelbuild/rules_java/releases/download/8.15.2/rules_java-8.15.2.tar.gz",
+            "https://github.com/bazelbuild/rules_java/releases/download/9.6.1/rules_java-9.6.1.tar.gz",
         ],
     )
